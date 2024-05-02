@@ -7,7 +7,7 @@ import jax.numpy as jnp
 
 from .transformer import Transformer
 from .base import ResNetEncoder, Codebook, ResNetDecoder
-from .maskgit import MaskGit
+from .maskgit import MaskGit, MaskGitAblation
 
 
 class TECO(nn.Module):
@@ -57,7 +57,7 @@ class TECO(nn.Module):
 
         # Dynamics Prior
         self.z_git = nn.vmap(
-                MaskGit,
+                MaskGitAblation,
                 in_axes=(1, 1, None), out_axes=1,
                 variable_axes={'params': None},
                 split_rngs={'params': False, 'sample': True, 'dropout': True}
