@@ -21,7 +21,6 @@ class MLP(nn.Module):
 
     @nn.compact
     def __call__(self, x):
-        print(self.hidden_dim)
         x = nn.Dense(self.hidden_dim * 8, dtype=self.dtype)(x)
         x = nn.gelu(x)
         x = LayerNorm(dtype=self.dtype)(x)
@@ -183,8 +182,11 @@ class MaskGitAblation(nn.Module):
     def _step(self, x, cond=None, deterministic=False):
         token_embed = jnp.asarray(self.token_embed, self.dtype)
         x = token_embed[(x,)]
+
+        if cond is not None:
+            x = jnp.concatenate((x, cond), axis=-1)
  
-        x = self.net(x, cond=cond, deterministic=deterministic)
+        x = self.net(x)
         logits = self.mlm(x, self.token_embed[:self.vocab_size])
         return logits
         

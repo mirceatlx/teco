@@ -5,8 +5,8 @@ import time
 import argparse
 import yaml
 import pickle
-import wandb
 import glob
+from tensorboardX import SummaryWriter
 
 import jax
 from jax import random
@@ -23,12 +23,34 @@ from teco.utils import flatten, add_border, save_video_grid
 from teco.models import get_model, sample
 from teco.models.xmap.mesh import default_mesh
 
+class Logger():
+    def __init__(self, path) -> None:
+        self.writer = SummaryWriter(logdir=path, flush_secs=1)
+        self.tag_step = {}
+
+    def log(self, tag, value):
+        if tag not in self.tag_step:
+            self.tag_step[tag] = 0
+        else:
+            self.tag_step[tag] += 1
+        if "video" in tag:
+            print(value.shape)
+            value = jax.reshape(value)
+            self.writer.add_video(tag, value, self.tag_step[tag], fps=15)
+        elif "images" in tag:
+            self.writer.add_images(tag, value, self.tag_step[tag])
+        elif "hist" in tag:
+            self.writer.add_histogram(tag, value, self.tag_step[tag])
+        else:
+            self.writer.add_scalar(tag, value, self.tag_step[tag])
 
 def main():
     global model, model_shard
     rng = random.PRNGKey(config.seed)
     rng, init_rng = random.split(rng)
     seed_all(config.seed)
+
+    logger = Logger("/projects/0/prjs0951/teco/runs/teco-dmlab-ablation-2")
 
     files = glob.glob(osp.join(config.output_dir, 'checkpoints', '*'))
     if len(files) > 0:
@@ -39,12 +61,6 @@ def main():
 
     if is_master_process:
         root_dir = os.environ['DATA_DIR']
-        os.makedirs(osp.join(root_dir, 'wandb'), exist_ok=True)
-
-        wandb.init(project='teco', config=config,
-                   dir=root_dir, id=config.run_id, resume='allow')
-        wandb.run.name = config.run_id
-        wandb.run.save()
 
     data = Data(config, xmap=True)
     train_loader = data.create_iterator(train=True, prefetch=False)
@@ -77,7 +93,7 @@ def main():
     rngs = random.split(rng, max(1, jax.local_device_count() // config.num_shards))
     while iteration <= config.total_steps:
         iteration, state, rngs = train(iteration, state_spec, state, train_loader,
-                                       schedule_fn, rngs)
+                                       schedule_fn, rngs, logger)
         if iteration % config.save_interval == 0:
             if is_master_process:
                 state_ = unshard_train_state(model_shard, jax.device_get(state))
@@ -85,7 +101,7 @@ def main():
                 print('Saved checkpoint to', save_path)
                 del state_ # Needed to prevent a memory leak bug
         if iteration % config.viz_interval == 0:
-            visualize(model_shard, iteration, state_spec, state, test_loader)
+            visualize(model_shard, iteration, state_spec, state, test_loader, logger)
         iteration += 1
 
 
@@ -119,7 +135,7 @@ def train_step(batch, state, rng):
 
 
 
-def train(iteration, state_spec, state, train_loader, schedule_fn, rngs):
+def train(iteration, state_spec, state, train_loader, schedule_fn, rngs, logger):
     progress = ProgressMeter(
         config.total_steps,
         ['time', 'data'] + model_shard.metrics
@@ -144,10 +160,9 @@ def train(iteration, state_spec, state, train_loader, schedule_fn, rngs):
         progress.update(n=batch_size, **{k: v for k, v in metrics.items()})
 
         if is_master_process and iteration % config.log_interval == 0:
-            wandb.log({'train/lr': schedule_fn(iteration)}, step=iteration)
-            wandb.log({**{f'train/{metric}': val
-                        for metric, val in metrics.items()}
-                    }, step=iteration)
+            logger.log('train/lr', schedule_fn(iteration))
+            for metric, val in metrics.items():
+                logger.log(f'train/{metric}', val)
 
         progress.update(time=time.time() - end)
         end = time.time()
@@ -163,7 +178,7 @@ def train(iteration, state_spec, state, train_loader, schedule_fn, rngs):
         iteration += 1
 
 
-def visualize(model, iteration, state_spec, state, test_loader):
+def visualize(model, iteration, state_spec, state, test_loader, logger):
     batch = next(test_loader)
 
     predictions, real = sample(model, state, batch['video'], batch['actions'],
@@ -179,8 +194,9 @@ def visualize(model, iteration, state_spec, state, test_loader):
     video = flatten(video, 0, 2) # (NB2)THWC
     video = save_video_grid(video)
     video = np.transpose(video, (0, 3, 1, 2))
+    video = np.expand_axis(video, axis=0)
     if is_master_process:
-        wandb.log({'viz/sample': wandb.Video(video, fps=20, format='gif')}, step=iteration)
+        logger.log("video_sample", video)
 
 
 if __name__ == '__main__':

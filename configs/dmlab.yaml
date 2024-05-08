@@ -1,8 +1,8 @@
-seed: 1
+seed: 42
 cache: false # caching available only for encoded datasets
 
 # Training
-batch_size: 32
+batch_size: 16
 num_workers: 4
 lr: 0.0001
 lr_schedule: "cosine"
@@ -14,7 +14,7 @@ viz_interval: 100000
 log_interval: 100
 
 # Data
-data_path: "TODO"
+data_path: "/projects/0/prjs0951/teco/dmlab"
 eval_seq_len: 300
 seq_len: 300
 image_size: 64
@@ -26,7 +26,7 @@ batch_keys: ["video", "actions"]
 
 # Model
 model: "teco"
-vqvae_ckpt: "TODO"
+vqvae_ckpt: "/projects/0/prjs0951/teco/pretrained-vqgan"
 
 encoder: # encoder / decoder are mirrored, with decoder depths reversed
   depths: [256, 512] # 16x16 -> 8x8

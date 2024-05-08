@@ -10,7 +10,7 @@ from .utils import create_g_all_gather, create_g_index_select, f_pmean
 from .transformer import TransformerShard
 from ..base import ResNetEncoder, Codebook
 from .decoder import ResNetDecoderShard
-from .maskgit import MaskGitShard
+from .maskgit import MaskGitShard, MaskGitAblationShard
 from . import sharding
 
 
@@ -61,7 +61,7 @@ class TECOShard(nn.Module):
 
         # Dynamics Prior
         self.z_git = nn.vmap(
-            MaskGitShard, in_axes=(1, 1, None), out_axes=1,
+            MaskGitAblationShard, in_axes=(1, 1, None), out_axes=1,
             variable_axes={'params': None},
             split_rngs={'sample': True, 'dropout': True, 'params': False}
         )(
@@ -251,7 +251,7 @@ class TECOShard(nn.Module):
                 shape=(self.config.seq_len, *z_tfm_shape)
             ),
             'z_unproj': sharding.GenericReplicated(reduce_mode='identity'),
-            'z_git': MaskGitShard.model_spec(**self.config.z_git),
+            'z_git': MaskGitAblationShard.model_spec(**self.config.z_git),
             'decoder': ResNetDecoderShard.model_spec(**self.config.decoder)
         })
         

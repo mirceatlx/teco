@@ -1,0 +1,43 @@
+============================================================================================== 
+Warning! Mixing Conda and module environments may lead to corruption of the
+user environment. 
+We do not recommend users mixing those two environments unless absolutely
+necessary. Note that 
+SURF does not provide any support for Conda environment.
+For more information, please refer to our software policy page:
+https://servicedesk.surf.nl/wiki/display/WIKI/Software+policy+Snellius#SoftwarepolicySnellius-UseofAnacondaandMinicondaenvironmentsonSnellius 
+
+Remember that many packages have already been installed on the system and can
+be loaded using 
+the 'module load <package__name>' command. If you are uncertain if a package is
+already available 
+on the system, please use 'module avail' or 'module spider' to search for it.
+============================================================================================== 
+no change     /sw/arch/RHEL8/EB_production/2023/software/Miniconda3/23.5.2-0/condabin/conda
+no change     /sw/arch/RHEL8/EB_production/2023/software/Miniconda3/23.5.2-0/bin/conda
+no change     /sw/arch/RHEL8/EB_production/2023/software/Miniconda3/23.5.2-0/bin/conda-env
+no change     /sw/arch/RHEL8/EB_production/2023/software/Miniconda3/23.5.2-0/bin/activate
+no change     /sw/arch/RHEL8/EB_production/2023/software/Miniconda3/23.5.2-0/bin/deactivate
+no change     /sw/arch/RHEL8/EB_production/2023/software/Miniconda3/23.5.2-0/etc/profile.d/conda.sh
+no change     /sw/arch/RHEL8/EB_production/2023/software/Miniconda3/23.5.2-0/etc/fish/conf.d/conda.fish
+no change     /sw/arch/RHEL8/EB_production/2023/software/Miniconda3/23.5.2-0/shell/condabin/Conda.psm1
+no change     /sw/arch/RHEL8/EB_production/2023/software/Miniconda3/23.5.2-0/shell/condabin/conda-hook.ps1
+no change     /sw/arch/RHEL8/EB_production/2023/software/Miniconda3/23.5.2-0/lib/python3.11/site-packages/xontrib/conda.xsh
+no change     /sw/arch/RHEL8/EB_production/2023/software/Miniconda3/23.5.2-0/etc/profile.d/conda.csh
+no change     /home/cmeo/.bashrc
+No action taken.
+/var/spool/slurm/slurmd/job6137388/slurm_script: line 21: 1065152 Aborted                 python scripts/train.py -o /projects/0/prjs0951/teco/ -c configs/dmlab.yaml > 'logs/teco_dmlab_ablation.out' 2> 'logs/teco_dmlab_ablation.err'
+
+JOB STATISTICS
+==============
+Job ID: 6137388
+Cluster: snellius
+User/Group: cmeo/cmeo
+State: FAILED (exit code 134)
+Nodes: 1
+Cores per node: 18
+CPU Utilized: 00:00:10
+CPU Efficiency: 3.70% of 00:04:30 core-walltime
+Job Wall-clock time: 00:00:15
+Memory Utilized: 1.12 MB
+Memory Efficiency: 0.00% of 60.00 GB

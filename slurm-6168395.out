@@ -1,0 +1,27 @@
+***************************************************************************************************** 
+* WARNING: The 2021 software stack is not available on the 'genoa' partition.
+Please use the 2022 * 
+* software stack. * 
+* * 
+* If you have any question, please contact us via
+http://servicedesk.surfsara.nl. * 
+***************************************************************************************************** 
+Lmod has detected the following error: These module(s) or extension(s) exist
+but cannot be loaded as requested: "Miniconda3/23.5.2-0"
+   Try: "module spider Miniconda3/23.5.2-0" to see how to load the module(s).
+
+
+
+no change     /sw/arch/RHEL8/EB_production/2023/software/Miniconda3/23.5.2-0/condabin/conda
+no change     /sw/arch/RHEL8/EB_production/2023/software/Miniconda3/23.5.2-0/bin/conda
+no change     /sw/arch/RHEL8/EB_production/2023/software/Miniconda3/23.5.2-0/bin/conda-env
+no change     /sw/arch/RHEL8/EB_production/2023/software/Miniconda3/23.5.2-0/bin/activate
+no change     /sw/arch/RHEL8/EB_production/2023/software/Miniconda3/23.5.2-0/bin/deactivate
+no change     /sw/arch/RHEL8/EB_production/2023/software/Miniconda3/23.5.2-0/etc/profile.d/conda.sh
+no change     /sw/arch/RHEL8/EB_production/2023/software/Miniconda3/23.5.2-0/etc/fish/conf.d/conda.fish
+no change     /sw/arch/RHEL8/EB_production/2023/software/Miniconda3/23.5.2-0/shell/condabin/Conda.psm1
+no change     /sw/arch/RHEL8/EB_production/2023/software/Miniconda3/23.5.2-0/shell/condabin/conda-hook.ps1
+no change     /sw/arch/RHEL8/EB_production/2023/software/Miniconda3/23.5.2-0/lib/python3.11/site-packages/xontrib/conda.xsh
+no change     /sw/arch/RHEL8/EB_production/2023/software/Miniconda3/23.5.2-0/etc/profile.d/conda.csh
+no change     /home/cmeo/.bashrc
+No action taken.
